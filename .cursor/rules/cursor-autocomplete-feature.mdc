@@ -1,0 +1,12 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+Requirements:
+
+Locate all English comments in the code, whether in // or /* ... */ format.
+Translate these comments accurately into Korean, preserving the original meaning.
+For technical terms, use commonly accepted Korean equivalents or, if necessary, include the original English term in parentheses for clarity.
+The translation process can be carried out using automated tools or manual translation.
+Upon completion, verify that all comments have been translated into Korean.
