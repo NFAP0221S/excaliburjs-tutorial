@@ -3,6 +3,8 @@ import * as ex from "excalibur";
 import { Ground } from "./ground";
 
 export class Bird extends ex.Actor {
+  jumping = false;
+
   constructor() {
     super({
       pos: ex.vec(200, 300),
@@ -34,6 +36,35 @@ export class Bird extends ex.Actor {
     if (other.owner instanceof Ground) {
       this.stop();
     }
+  }
+
+  private isInputActive(engine: ex.Engine) {
+    // 스페이스바나 첫 번째 포인터가 눌려있는지 확인
+    return (
+      engine.input.keyboard.isHeld(ex.Keys.Space) ||
+      engine.input.pointers.isDown(0)
+    );
+  }
+
+  /**
+   * onPostUpdate 라이프사이클 이벤트 핸들러를 안전하게 오버라이드할 수 있습니다. `.on('postupdate', (evt) =>{...})`와 동일합니다
+   *
+   * `onPostUpdate`는 액터가 업데이트된 직후에 호출됩니다.
+   * @param engine 현재 게임 엔진에 대한 참조
+   * @param elapsed 마지막 업데이트 이후 경과된 시간(밀리초)
+   */
+  override onPostUpdate(engine: ex.Engine): void {
+    if (!this.jumping && this.isInputActive(engine)) {
+      this.vel.y += -800; // 음수는 위로 올라가는 것을 의미
+      this.jumping = true;
+    }
+    if (!this.isInputActive(engine)) {
+      this.jumping = false;
+    }
+    // 속도가 너무 커지지 않도록 제한
+    this.vel.y = ex.clamp(this.vel.y, -500, 500);
+    // 파이프와 관련된 bird의 속도
+    this.rotation = ex.vec(200, this.vel.y).toAngle();
   }
 
   start() {} // later we'll use this to start our bird after game over
