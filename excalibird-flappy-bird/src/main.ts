@@ -4,6 +4,7 @@ import { MyLevel } from "./level";
 import * as ex from "excalibur";
 import { Bird } from "./bird";
 import { Ground } from "./ground";
+import { Pipe } from "./pipe";
 
 // main.ts 파일은 엔진을 설정하는 최소한의 코드만 작성하여 작게 유지하는 것이 목표입니다.
 
@@ -31,6 +32,11 @@ game.add(bird);
 // drawHeight는 게임 픽셀 단위로 표시되는 화면의 높이입니다
 const ground = new Ground(ex.vec(0, game.screen.drawHeight - 64));
 game.add(ground);
+
+const topPipe = new Pipe(ex.vec(game.screen.drawWidth, 150), "top"); // 150은 파이프의 높이
+game.add(topPipe);
+const bottomPipe = new Pipe(ex.vec(game.screen.drawWidth, 300), "bottom"); // 300은 파이프의 높이
+game.add(bottomPipe);
 
 game.start();
 
