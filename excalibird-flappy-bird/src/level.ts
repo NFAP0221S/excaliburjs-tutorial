@@ -5,13 +5,22 @@ import {
   Scene,
   SceneActivationContext,
 } from "excalibur";
-import { Player } from "./player";
+import * as ex from "excalibur";
+import { Bird } from "./bird";
+import { Ground } from "./ground";
+import { Pipe } from "./pipe";
 
-export class MyLevel extends Scene {
-  override onInitialize(engine: Engine): void {
-    // 게임의 구성 요소를 설정하는 곳으로 이 메서드에서 작업하는 것을 권장합니다.
-    const player = new Player();
-    this.add(player); // Actors need to be added to a scene to be drawn
+export class Level extends Scene {
+  bird: Bird = new Bird();
+  ground!: Ground;
+  override onInitialize(engine: ex.Engine): void {
+    this.add(this.bird);
+    this.ground = new Ground(ex.vec(0, engine.screen.drawHeight - 64));
+    this.add(this.ground);
+    const topPipe = new Pipe(ex.vec(engine.screen.drawWidth, 150), "top");
+    this.add(topPipe);
+    const bottomPipe = new Pipe(ex.vec(engine.screen.drawWidth, 300), "bottom");
+    this.add(bottomPipe);
   }
 
   override onPreLoad(loader: DefaultLoader): void {

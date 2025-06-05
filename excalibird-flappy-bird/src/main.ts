@@ -1,6 +1,6 @@
 import { Color, DisplayMode, Engine, FadeInOut } from "excalibur";
 import { loader } from "./resources";
-import { MyLevel } from "./level";
+import { Level } from "./level";
 import * as ex from "excalibur";
 import { Bird } from "./bird";
 import { Ground } from "./ground";
@@ -16,9 +16,8 @@ const game = new Engine({
   pixelRatio: 2,
 
   displayMode: DisplayMode.FitScreenAndFill, // excalibur가 창을 어떻게 채울지 결정하는 디스플레이 모드
-  scenes: {
-    start: MyLevel,
-  },
+  scenes: { Level: Level },
+
   // physics: {
   //   solver: SolverStrategy.Realistic,
   //   substep: 5 // 더 견고한 물리 시뮬레이션을 위한 서브스텝
@@ -38,7 +37,9 @@ game.add(topPipe);
 const bottomPipe = new Pipe(ex.vec(game.screen.drawWidth, 300), "bottom"); // 300은 파이프의 높이
 game.add(bottomPipe);
 
-game.start();
+game.start().then(() => {
+  game.goToScene("Level");
+});
 
 // game
 //   .start("start", {
