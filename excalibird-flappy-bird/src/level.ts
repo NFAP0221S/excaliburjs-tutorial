@@ -9,8 +9,12 @@ import * as ex from "excalibur";
 import { Bird } from "./bird";
 import { Ground } from "./ground";
 import { Pipe } from "./pipe";
+import { PipeFactory } from "./pipe-factory";
+import { Config } from "./config";
 
 export class Level extends Scene {
+  random = new ex.Random();
+  pipeFactory = new PipeFactory(this, this.random, Config.PipeInterval);
   bird: Bird = new Bird();
   ground!: Ground;
   override onInitialize(engine: ex.Engine): void {
@@ -21,6 +25,8 @@ export class Level extends Scene {
     this.add(topPipe);
     const bottomPipe = new Pipe(ex.vec(engine.screen.drawWidth, 300), "bottom");
     this.add(bottomPipe);
+
+    this.pipeFactory.start();
   }
 
   override onPreLoad(loader: DefaultLoader): void {
