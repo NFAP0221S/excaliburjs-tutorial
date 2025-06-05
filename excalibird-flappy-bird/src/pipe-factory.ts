@@ -5,6 +5,7 @@ import { Ground } from "./ground";
 import { Pipe } from "./pipe";
 import { Level } from "./level";
 import { Config } from "./config";
+import { ScoreTrigger } from "./score-trigger";
 
 export class PipeFactory {
   private timer: ex.Timer;
@@ -41,6 +42,12 @@ export class PipeFactory {
       "top"
     );
     this.level.add(topPipe);
+
+    const scoreTrigger = new ScoreTrigger(
+      ex.vec(this.level.engine.screen.drawWidth, randomPipePosition),
+      this.level
+    );
+    this.level.add(scoreTrigger);
   }
 
   start() {
@@ -49,16 +56,15 @@ export class PipeFactory {
 
   reset() {
     for (const actor of this.level.actors) {
-      if (actor instanceof Pipe) {
+      if (actor instanceof Pipe || actor instanceof ScoreTrigger) {
         actor.kill();
       }
     }
   }
-
   stop() {
     this.timer.stop();
     for (const actor of this.level.actors) {
-      if (actor instanceof Pipe) {
+      if (actor instanceof Pipe || actor instanceof ScoreTrigger) {
         actor.vel = ex.vec(0, 0);
       }
     }
