@@ -15,7 +15,7 @@ import { Config } from "./config";
 export class Level extends Scene {
   random = new ex.Random();
   pipeFactory = new PipeFactory(this, this.random, Config.PipeInterval);
-  bird: Bird = new Bird();
+  bird: Bird = new Bird(this);
   ground!: Ground;
   score: number = 0;
   best: number = 0;
@@ -40,7 +40,18 @@ export class Level extends Scene {
       textAlign: ex.TextAlign.End,
     }),
   });
-  onInitialize(engine: ex.Engine): void {
+  startGameLabel = new ex.Label({
+    text: "Tap to Start",
+    x: 200,
+    y: 200,
+    z: 2,
+    font: new ex.Font({
+      size: 30,
+      color: ex.Color.White,
+      textAlign: ex.TextAlign.Center,
+    }),
+  });
+  override onInitialize(engine: ex.Engine): void {
     this.add(this.bird);
     this.ground = new Ground(ex.vec(0, engine.screen.drawHeight - 64));
     this.add(this.ground);
@@ -49,7 +60,8 @@ export class Level extends Scene {
     const bottomPipe = new Pipe(ex.vec(engine.screen.drawWidth, 300), "bottom");
     this.add(bottomPipe);
 
-    this.pipeFactory.start();
+    //this.pipeFactory.start();
+    this.showStartInstructions();
 
     this.add(this.scoreLabel);
     this.add(this.bestLabel);
@@ -60,6 +72,28 @@ export class Level extends Scene {
     } else {
       this.setBestScore(0);
     }
+  }
+  showStartInstructions() {
+    this.startGameLabel.graphics.isVisible = true;
+    this.engine.input.pointers.once("down", () => {
+      this.reset();
+      this.startGameLabel.graphics.isVisible = false;
+      this.bird.start();
+      this.pipeFactory.start();
+      this.ground.start();
+    });
+  }
+  reset() {
+    this.bird.reset();
+    this.pipeFactory.reset();
+    this.score = 0;
+    this.scoreLabel.text = `Score: ${this.score}`;
+  }
+  triggerGameOver() {
+    this.pipeFactory.stop();
+    this.bird.stop();
+    this.ground.stop();
+    this.showStartInstructions();
   }
   incrementScore() {
     this.scoreLabel.text = `Score: ${++this.score}`;

@@ -3,11 +3,13 @@ import * as ex from "excalibur";
 import { Ground } from "./ground";
 import { Pipe } from "./pipe";
 import { Config } from "./config";
+import { Level } from "./level";
 
 export class Bird extends ex.Actor {
   jumping = false;
+  playing = false;
 
-  constructor() {
+  constructor(private level: Level) {
     super({
       pos: Config.BirdStartPos,
       // width: 16,
@@ -25,6 +27,9 @@ export class Bird extends ex.Actor {
    */
   override onInitialize(): void {
     this.acc = ex.vec(0, 1200); // 초당 픽셀 수 1200
+    this.on("exitviewport", () => {
+      this.level.triggerGameOver();
+    });
   }
 
   /**
@@ -35,9 +40,14 @@ export class Bird extends ex.Actor {
    * @param side
    * @param contact
    */
+  // override onCollisionStart(_self: ex.Collider, other: ex.Collider): void {
+  //   if (other.owner instanceof Ground || other.owner instanceof Pipe) {
+  //     this.stop();
+  //   }
+  // }
   override onCollisionStart(_self: ex.Collider, other: ex.Collider): void {
-    if (other.owner instanceof Ground || other.owner instanceof Pipe) {
-      this.stop();
+    if (other.owner instanceof Pipe || other.owner instanceof Ground) {
+      this.level.triggerGameOver();
     }
   }
 
@@ -57,6 +67,7 @@ export class Bird extends ex.Actor {
    * @param elapsed 마지막 업데이트 이후 경과된 시간(밀리초)
    */
   override onPostUpdate(engine: ex.Engine): void {
+    if (!this.playing) return;
     if (!this.jumping && this.isInputActive(engine)) {
       this.vel.y += -800; // 음수는 위로 올라가는 것을 의미
       this.jumping = true;
@@ -70,9 +81,17 @@ export class Bird extends ex.Actor {
     this.rotation = ex.vec(200, this.vel.y).toAngle();
   }
 
-  start() {} // later we'll use this to start our bird after game over
-
+  start() {
+    this.playing = true;
+    this.pos = Config.BirdStartPos; // starting position
+    this.acc = ex.vec(0, Config.BirdAcceleration); // pixels per second per second
+  }
+  reset() {
+    this.pos = Config.BirdStartPos; // starting position
+    this.stop();
+  }
   stop() {
+    this.playing = false;
     this.vel = ex.vec(0, 0); // 속도를 0으로 설정
     this.acc = ex.vec(0, 0); // 가속도를 0으로 설정
   } // later we'll use this to stop our bird after collision
