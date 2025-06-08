@@ -32,25 +32,6 @@ export class Bird extends ex.Actor {
     });
   }
 
-  /**
-   * 두 엔티티가 ColliderComponent를 가지고 처음 충돌하거나 접촉할 때 한 번 발생합니다.
-   * 콜라이더가 계속 접촉 상태를 유지하면 분리되어 다시 충돌할 때까지 발생하지 않습니다.
-   * @param self
-   * @param other
-   * @param side
-   * @param contact
-   */
-  // override onCollisionStart(_self: ex.Collider, other: ex.Collider): void {
-  //   if (other.owner instanceof Ground || other.owner instanceof Pipe) {
-  //     this.stop();
-  //   }
-  // }
-  override onCollisionStart(_self: ex.Collider, other: ex.Collider): void {
-    if (other.owner instanceof Pipe || other.owner instanceof Ground) {
-      this.level.triggerGameOver();
-    }
-  }
-
   private isInputActive(engine: ex.Engine) {
     // 스페이스바나 첫 번째 포인터가 눌려있는지 확인
     return (
@@ -95,4 +76,23 @@ export class Bird extends ex.Actor {
     this.vel = ex.vec(0, 0); // 속도를 0으로 설정
     this.acc = ex.vec(0, 0); // 가속도를 0으로 설정
   } // later we'll use this to stop our bird after collision
+
+  /**
+   * 두 엔티티가 ColliderComponent를 가지고 처음 충돌하거나 접촉할 때 한 번 발생합니다.
+   * 콜라이더가 계속 접촉 상태를 유지하면 분리되어 다시 충돌할 때까지 발생하지 않습니다.
+   * @param self
+   * @param other
+   * @param side
+   * @param contact
+   */
+  // override onCollisionStart(_self: ex.Collider, other: ex.Collider): void {
+  //   if (other.owner instanceof Ground || other.owner instanceof Pipe) {
+  //     this.stop();
+  //   }
+  // }
+  override onCollisionStart(_self: ex.Collider, other: ex.Collider): void {
+    if (other.owner instanceof Pipe || other.owner instanceof Ground) {
+      this.level.triggerGameOver();
+    }
+  }
 }

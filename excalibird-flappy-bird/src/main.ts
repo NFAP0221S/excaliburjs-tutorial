@@ -1,10 +1,11 @@
 import { Color, DisplayMode, Engine, FadeInOut } from "excalibur";
-import { loader } from "./resources";
+// import { loader } from "./resources";
 import { Level } from "./level";
 import * as ex from "excalibur";
 import { Bird } from "./bird";
 import { Ground } from "./ground";
 import { Pipe } from "./pipe";
+import { Resources } from "./resources";
 
 // main.ts 파일은 엔진을 설정하는 최소한의 코드만 작성하여 작게 유지하는 것이 목표입니다.
 
@@ -25,8 +26,10 @@ const game = new Engine({
   // fixedUpdateTimestep: 16 // 일관된 물리 시뮬레이션이 중요할 때 고정 업데이트 타임스텝 사용
 });
 
-const bird = new Bird();
-game.add(bird);
+// const bird = new Bird();
+const loader = new ex.Loader(Object.values(Resources));
+
+// game.add(bird);
 
 // drawHeight는 게임 픽셀 단위로 표시되는 화면의 높이입니다
 const ground = new Ground(ex.vec(0, game.screen.drawHeight - 64));
@@ -37,7 +40,7 @@ game.add(topPipe);
 const bottomPipe = new Pipe(ex.vec(game.screen.drawWidth, 300), "bottom"); // 300은 파이프의 높이
 game.add(bottomPipe);
 
-game.start().then(() => {
+game.start(loader).then(() => {
   game.goToScene("Level");
 });
 
