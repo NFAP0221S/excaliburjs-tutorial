@@ -4,10 +4,15 @@ import { Ground } from "./ground";
 import { Pipe } from "./pipe";
 import { Config } from "./config";
 import { Level } from "./level";
+import { Resources } from "./resources";
 
 export class Bird extends ex.Actor {
   jumping = false;
   playing = false;
+  upAnimation!: ex.Animation;
+  downAnimation!: ex.Animation;
+
+  startSprite!: ex.Sprite;
 
   constructor(private level: Level) {
     super({
@@ -26,7 +31,39 @@ export class Bird extends ex.Actor {
    * 이벤트 핸들러 `.on('initialize', (evt) => {...})`와 동일합니다
    */
   override onInitialize(): void {
-    this.acc = ex.vec(0, 1200); // 초당 픽셀 수 1200
+    // Slice up image into a sprite sheet
+    const spriteSheet = ex.SpriteSheet.fromImageSource({
+      image: Resources.BirdImage,
+      grid: {
+        rows: 1,
+        columns: 4,
+        spriteWidth: 32,
+        spriteHeight: 32,
+      },
+    });
+    this.startSprite = spriteSheet.getSprite(1, 0);
+
+    // Animation to play going up on tap
+    this.upAnimation = ex.Animation.fromSpriteSheet(
+      spriteSheet,
+      [2, 1, 0], // 3rd frame, then 2nd, then first
+      150, // 150ms for each frame
+      ex.AnimationStrategy.Freeze
+    );
+    // Animation to play going down
+    this.downAnimation = ex.Animation.fromSpriteSheet(
+      spriteSheet,
+      [0, 1, 2],
+      150,
+      ex.AnimationStrategy.Freeze
+    );
+    // Register animations by name
+    this.graphics.add("down", this.downAnimation);
+    this.graphics.add("up", this.upAnimation);
+    this.graphics.add("start", this.startSprite);
+
+    this.graphics.use("start");
+
     this.on("exitviewport", () => {
       this.level.triggerGameOver();
     });
